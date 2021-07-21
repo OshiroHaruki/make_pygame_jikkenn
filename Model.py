@@ -1,5 +1,3 @@
-import numpy as np
-
 class Entity:
     def __init__(self, size:list, name:str=None, visual=None):
         self.pos = [0,0]
@@ -55,7 +53,7 @@ class Model:
 
     def move(self,p:list):
         if (self.move_checker.move_check(self.player.entity.pos, p)):
-            pos = map(np.add, self.player.entity.pos, p)
+            pos = [self.player.entity.pos[0]+p[0], self.player.entity.pos[1]+p[1]]
             self.player.setPos(pos)
 
     def search(self):
