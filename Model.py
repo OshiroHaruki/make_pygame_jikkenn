@@ -1,3 +1,5 @@
+import random
+
 class Entity:
     def __init__(self, size:list, name:str=None, visual=None):
         self.pos = [0,0]
@@ -38,31 +40,48 @@ class Player:
         self.entity.setPos(pos)
     def get_item(self):
         """アイテム入手の処理。具体的にはself.items[名前] = 個数　とかにしたい
+        
         """
-        pass
-    
-PLAYER_POS = [0,0]
-class Model:
-    def __init__(self,view):
-        self.view = view
-        self.player = Player([64,64],name = "denchu",visual = "player")
-        self.player.setPos(PLAYER_POS)
-        self.entites = [self.player.entity]
-        self.move_checker = MoveChecker()
-        self.move_checker.set_DontMoveArea([1,1])
+        print("でんちを みつけた!")
+        #pass
 
-    def move(self,p:list):
+PLAYER_POS = [0,0]
+class Action_Search:
+    def __init__(self,player):
+        self.player = player
+        self.player.setPos(PLAYER_POS)
+        self.move_checker = MoveChecker()
+
+    def player_move(self, p:list):
         if (self.move_checker.move_check(self.player.entity.pos, p)):
             pos = [self.player.entity.pos[0]+p[0], self.player.entity.pos[1]+p[1]]
             self.player.setPos(pos)
 
-    def search(self):
+    def player_search_around(self):
         """周囲を調べる.何を実装するかは未定.アイテムゲットや敵キャラとの遭遇など？
+        一旦機能を確認したいので、とりあえず確率でアイテムゲットのprint,それ以外で何も見つからないとする
         """
         print("しらべチュウ...")
-        print("なにも みつからなかった...")
+        rand_event = random.random()
+        if rand_event > 0.5:
+            self.player.get_item()
+        else:
+            print("なにも みつからなかった...")
 
+class Model:
+    def __init__(self,view):
+        self.view = view
+        self.player = Player([64,64],name = "denchu",visual = "player")
+        self.act_search = Action_Search(self.player)
 
-    def update(self):
+        self.entites = [self.player.entity]
+
+    def move(self,p:list):
+        self.act_search.player_move(p)
+
+    def search(self):
+        self.act_search.player_search_around()
+
+    def update(self):#ここで描写の更新を行う
         for obj in self.entites[:]:
             self.view.draw(obj)
