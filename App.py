@@ -23,13 +23,14 @@ class App:
     def event_loop(self):
         while True:
             if self.isTansaku:
+                self.screen.fill((0,200,0))
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit()
                     elif event.type == KEYDOWN:
                         self.controller.keyDown(event.key)
-                self.screen.fill((0,255,0))
+                
                 self.model.update()
             pygame.display.update()
 

@@ -76,12 +76,22 @@ class Model:
 
         self.entites = [self.player.entity]
 
+        self.isOpenedGUI = False
+
     def move(self,p:list):
         self.act_search.player_move(p)
 
     def search(self):
         self.act_search.player_search_around()
 
+    def openGUI(self):
+        self.isOpenedGUI = True
+
+    def closeGUI(self):
+        self.isOpenedGUI = False
+
     def update(self):#ここで描写の更新を行う
         for obj in self.entites[:]:
             self.view.draw(obj)
+        if self.isOpenedGUI:
+            self.view.GUI_draw()
