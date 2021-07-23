@@ -4,6 +4,7 @@ import sys
 from View import View
 from Model import Model
 from Controller import Controller
+from map import Map
 
 WINDOW_SIZE_HEIGHT = 640
 WINDOW_SIZE_WIDTH = 640
@@ -23,7 +24,8 @@ class App:
     def event_loop(self):
         while True:
             if self.isTansaku:
-                self.screen.fill((0,200,0))
+                #self.map.draw(self.screen)# mapをとりあえず描いてみる->Viewクラスに移動しました
+                #self.screen.fill((0,200,0))
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()

@@ -1,6 +1,10 @@
 import random
+from map import Map
 
 class Entity:
+    """
+    キャラクタの基本クラス
+    """
     def __init__(self, size:list, name:str=None, visual=None):
         self.pos = [0,0]
         self.size = size
@@ -12,16 +16,28 @@ class Entity:
         self.pos = list(p)
     
 class MoveChecker():
-    def __init__(self):      
+    """
+    探索パートの移動の制限に関するクラス.
+    """
+    def __init__(self,limit_x, limit_y):
+        """
+        マップが変わるごとに移動範囲を手動で入力するのは面倒なので、mapの端から端までを引数limitで指定するように変更した.
+        """  
         self.LEFT_LIMIT = 0
-        self.RIGHT_LIMIT = 9
+        self.RIGHT_LIMIT = limit_x -1
         self.UP_LIMIT = 0
-        self.DOWN_LIMIT = 9
+        self.DOWN_LIMIT = limit_y -1
         self.cant_move_area = []
     def set_DontMoveArea(self,pos:list):
+        """
+        移動不可の場所を設定するための関数
+        """
         self.cant_move_area.append(pos)
 
     def move_check(self, pos:list, move_d:list):
+        """
+        移動しようとする方向に、移動可能かを調べる関数
+        """
         if pos[0] + move_d[0] < self.LEFT_LIMIT or pos[0] + move_d[0] > self.RIGHT_LIMIT:
             return False
         elif pos[1] + move_d[1] < self.UP_LIMIT or pos[1] + move_d[1] > self.DOWN_LIMIT:
@@ -32,11 +48,17 @@ class MoveChecker():
         return True
 
 class Player:
+    """
+    プレイヤーに関するクラス.
+    """
     def __init__(self, size:list, name:str=None, visual=None):
         self.entity = Entity([64,64], name = "denchu", visual = "player")
         self.hp = 10 #探索パートではhp使うつもりないけど、とりあえず置いているだけです.
         self.items = {} #アイテム機能を追加するつもりなので、とりあえず辞書型で置いてます.
     def setPos(self,pos:list):
+        """
+        自分の位置(座標)をセットする関数
+        """
         self.entity.setPos(pos)
     def get_item(self):
         """アイテム入手の処理。具体的にはself.items[名前] = 個数　とかにしたい
@@ -45,14 +67,21 @@ class Player:
         print("でんちを みつけた!")
         #pass
 
-PLAYER_POS = [0,0]
-class Action_Search:
-    def __init__(self,player):
+PLAYER_POS = [1,19]
+class Action_Search_Part:
+    """
+    探索パートに関するクラス.　プレイヤーの移動や調べるコマンドの処理を行うクラス.
+    """
+    def __init__(self,player,_map):
         self.player = player
         self.player.setPos(PLAYER_POS)
-        self.move_checker = MoveChecker()
+        self.map = _map
+        self.move_checker = MoveChecker(self.map.col,self.map.row)
 
     def player_move(self, p:list):
+        """
+        プレイヤーの移動処理を行う関数
+        """
         if (self.move_checker.move_check(self.player.entity.pos, p)):
             pos = [self.player.entity.pos[0]+p[0], self.player.entity.pos[1]+p[1]]
             self.player.setPos(pos)
@@ -71,26 +100,43 @@ class Action_Search:
 class Model:
     def __init__(self,view):
         self.view = view
+        self.map = self.view.map #map格納
         self.player = Player([64,64],name = "denchu",visual = "player")
-        self.act_search = Action_Search(self.player)
+        self.act_search_part = Action_Search_Part(self.player, self.map)
 
         self.entites = [self.player.entity]
 
         self.isOpenedGUI = False
 
     def move(self,p:list):
-        self.act_search.player_move(p)
+        """
+        プレイヤーの移動を行う関数
+        """
+        self.act_search_part.player_move(p)
 
     def search(self):
-        self.act_search.player_search_around()
+        """
+        プレイヤーの調べるコマンドを行う関数
+        """
+        self.act_search_part.player_search_around()
 
     def openGUI(self):
+        """
+        GUIを開く関数
+        """
         self.isOpenedGUI = True
 
     def closeGUI(self):
+        """
+        GUIを閉じる関数
+        """
         self.isOpenedGUI = False
 
     def update(self):#ここで描写の更新を行う
+        """
+        viewに結果を通知する関数.
+        """
+        self.view.draw_map()
         for obj in self.entites[:]:
             self.view.draw(obj)
         if self.isOpenedGUI:
