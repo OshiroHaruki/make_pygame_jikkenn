@@ -68,7 +68,7 @@ class Player:
         #pass
 
 PLAYER_POS = [1,19]
-class Action_Search_Part:
+class Action_Search:
     """
     探索パートに関するクラス.　プレイヤーの移動や調べるコマンドの処理を行うクラス.
     """
@@ -106,7 +106,7 @@ class Model:
         self.view = view
         self.map = self.view.map #map格納
         self.player = Player([64,64],name = "denchu",visual = "player")
-        self.act_search_part = Action_Search_Part(self.player, self.map)
+        self.act_search = Action_Search(self.player, self.map)
 
         self.entites = [self.player.entity]
 
@@ -115,17 +115,19 @@ class Model:
         self.message = ""
         self.isOpenedMessage = False
 
+        self.select_command_pos = [425,45]
+
     def move(self,p:list):
         """
         プレイヤーの移動を行う関数
         """
-        self.act_search_part.player_move(p)
+        self.act_search.player_move(p)
 
     def search(self):
         """
         プレイヤーの調べるコマンドを行う関数
         """
-        self.message = self.act_search_part.player_search_around()
+        self.message = self.act_search.player_search_around()
         self.openMessage()
 
     def openGUI(self):
@@ -152,6 +154,15 @@ class Model:
         """
         self.isOpenedMessage = False
 
+    def t_select_move_under(self):
+        """
+        選択ボタンっぽいやつ(円)を移動させる関数.機能分割して別のクラスに移動した方がよいかも/
+        """
+        if self.select_command_pos[1] + 20 > 170:
+            self.select_command_pos[1] = 45 #一番下まで行ったら、一番上に戻る。
+        else:
+            self.select_command_pos[1] += 20
+
     def update(self):#ここで描写の更新を行う
         """
         viewに結果を通知する関数.
@@ -161,5 +172,6 @@ class Model:
             self.view.draw(obj)
         if self.isOpenedGUI:
             self.view.GUI_draw()
+            self.view.draw_circle(self.select_command_pos[0],self.select_command_pos[1])
         if self.isOpenedMessage:
             self.view.draw_search_around(self.message)

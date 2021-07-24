@@ -26,3 +26,5 @@ class Controller:
         else: # GUIが開いているとき
             if key == K_e:
                 self.model.closeGUI()
+            elif key == K_DOWN:
+                self.model.t_select_move_under()
