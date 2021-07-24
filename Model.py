@@ -64,7 +64,7 @@ class Player:
         """アイテム入手の処理。具体的にはself.items[名前] = 個数　とかにしたい
         
         """
-        print("でんちを みつけた!")
+        #print("でんちを みつけた!")
         #pass
 
 PLAYER_POS = [1,19]
@@ -89,13 +89,17 @@ class Action_Search_Part:
     def player_search_around(self):
         """周囲を調べる.何を実装するかは未定.アイテムゲットや敵キャラとの遭遇など？
         一旦機能を確認したいので、とりあえず確率でアイテムゲットのprint,それ以外で何も見つからないとする
+        ->これが実行されたらGUIが開くようにした。それに結果を表示するようにしてみる.
         """
-        print("しらべチュウ...")
+        set_text = ""
         rand_event = random.random()
         if rand_event > 0.5:
             self.player.get_item()
+            set_text = set_text + " Get Decnhi!"
         else:
-            print("なにも みつからなかった...")
+            set_text = set_text + " Not Found..."
+        return set_text
+        
 
 class Model:
     def __init__(self,view):
@@ -108,6 +112,9 @@ class Model:
 
         self.isOpenedGUI = False
 
+        self.message = ""
+        self.isOpenedMessage = False
+
     def move(self,p:list):
         """
         プレイヤーの移動を行う関数
@@ -118,7 +125,8 @@ class Model:
         """
         プレイヤーの調べるコマンドを行う関数
         """
-        self.act_search_part.player_search_around()
+        self.message = self.act_search_part.player_search_around()
+        self.openMessage()
 
     def openGUI(self):
         """
@@ -131,6 +139,18 @@ class Model:
         GUIを閉じる関数
         """
         self.isOpenedGUI = False
+    
+    def openMessage(self):
+        """
+        メッセージ画面を開く関数
+        """
+        self.isOpenedMessage = True
+
+    def closeMessage(self):
+        """
+        メッセージ画面を閉じる関数
+        """
+        self.isOpenedMessage = False
 
     def update(self):#ここで描写の更新を行う
         """
@@ -141,3 +161,5 @@ class Model:
             self.view.draw(obj)
         if self.isOpenedGUI:
             self.view.GUI_draw()
+        if self.isOpenedMessage:
+            self.view.draw_search_around(self.message)

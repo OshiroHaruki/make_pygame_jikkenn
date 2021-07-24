@@ -15,8 +15,9 @@ class View:
         self.load_img = pygame.transform.scale(self.load_img,(32,32))
         self.sprites["player"] = self.load_img #denchu.imgを格納
 
-        """GUIの仮制作用"""
+        """GUIの制作用"""
         self.font1 = pygame.font.SysFont(None, 25)
+        self.font2 = pygame.font.SysFont(None, 40)
         self.text_command_menu = self.font1.render("Command", False, (255,255,255))
         self.text_status = self.font1.render("Denchu", False, (255,255,255))
         """"""
@@ -46,3 +47,9 @@ class View:
         pygame.draw.rect(self.screen,(0,0,0), (15,15,140,190))
         self.screen.blit(self.text_command_menu,(460,16))
         self.screen.blit(self.text_status,(55,16))
+
+    def draw_search_around(self, text):
+        message = self.font2.render(text, False, (255,255,255))
+        pygame.draw.rect(self.screen, (255,255,255),(120,430,400,200))
+        pygame.draw.rect(self.screen, (0,0,0),(125,435,390,190))
+        self.screen.blit(message,(127,437))
