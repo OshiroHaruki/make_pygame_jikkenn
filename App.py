@@ -6,17 +6,17 @@ from Model import Model
 from Controller import Controller
 from map import Map
 
-WINDOW_SIZE_HEIGHT = 640
-WINDOW_SIZE_WIDTH = 640
+WINDOW_SIZE = (640,640)
 WINDOW_TITLE = "RPG_tansaku"
 
 class App:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WINDOW_SIZE_WIDTH,WINDOW_SIZE_HEIGHT))
+        self.screen = pygame.display.set_mode(WINDOW_SIZE)
         pygame.display.set_caption(WINDOW_TITLE)
 
-        self.view = View(self.screen)
+        self.map = Map()
+        self.view = View(self.screen,self.map)
         self.model = Model(self.view)
         self.controller = Controller(self.model)
 
@@ -24,8 +24,6 @@ class App:
     def event_loop(self):
         while True:
             if self.isTansaku:
-                #self.map.draw(self.screen)# mapをとりあえず描いてみる->Viewクラスに移動しました
-                #self.screen.fill((0,200,0))
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()

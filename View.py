@@ -2,44 +2,42 @@ import pygame
 from pygame.locals import *
 from map import Map
 
-DRAW_LITERAL = 64 #位置を画面サイズ/64で表しているので、描写の際には位置に64をかける必要がある.
-                  #32か64かは要相談？
-                  #したの32pxのほうで開発した方が良さそうだから、一旦そっちで開発する.
-DRAW_LITERAL_32px = 32 #mapに合わせた方が後々良さそう
+DRAW_LITERAL_32px = 32 #1マス32pixelなのでその定数
 
 def set_text(font,text):
     return font.render(text,False,(255,255,255))
 
+def draw_frame(screen,x_pos,y_pos,width,height):
+    pygame.draw.rect(screen,(255,255,255),(x_pos,y_pos,width,height))
+    pygame.draw.rect(screen,(0,0,0),(x_pos+5,y_pos+5,width-10,height-10))
+
+def draw_text(screen,text,x_pos,y_pos):
+    screen.blit(text,(x_pos,y_pos))
+
 class View:
-    def __init__(self,screen):
+    def __init__(self,screen,map):
         self.screen = screen
         self.sprites = {}
         self.load_img = pygame.image.load("./denchu.png")
-        #self.sprites["player"] = pygame.image.load("./denchu.png")
         self.load_img = pygame.transform.scale(self.load_img,(32,32))
         self.sprites["player"] = self.load_img #denchu.imgを格納
 
         """GUIの制作用"""
-        self.font1 = pygame.font.SysFont(None, 25)
-        self.font2 = pygame.font.SysFont(None, 40)
-        self.text_command_menu = self.font1.render("Command", False, (255,255,255))
-        self.text_status = self.font1.render("Denchu", False, (255,255,255))
-        self.text_commands = []
-        self.text_commands.append(set_text(self.font1, "Search"))
-        self.text_commands.append(set_text(self.font1, "Use Buttery"))
+        self.font1 = pygame.font.SysFont(None, 25) #小さめフォント
+        self.font2 = pygame.font.SysFont(None, 40) #大きめフォント
         """"""
 
         """Map用"""
-        self.map = Map()
+        self.map = map
         self.map.imgs[0] = pygame.image.load("BrightForest-A2-010.png")
         self.map.imgs[1] = pygame.image.load("BrightForest-A2-001.png")
         self.map.imgs[2] = pygame.image.load("BrightForest-A2-003.png")
         """"""
     
-    def getScreenSize(self):
+    def get_screen_size(self):
         return self.screen.get_size()
     
-    def draw(self, obj):
+    def draw_charactor(self, obj):
         """
         キャラクターを描写する関数.
         objはキャラクタ. objは少なくとも、"画像名(visual)"と"位置(pos)"を持つ
@@ -54,29 +52,30 @@ class View:
         """
         self.map.draw(self.screen)
     
-    def GUI_draw(self):
+    def draw_menu(self):
         """
         メニューのGUIを描写する関数.GUIの枠組みを表示するだけ.
+        ->関数で枠やテキストを表示するようにしているので、画面サイズが変更になっても数値をいじるだけで対応可能.
+        ->コマンドを増やす時はdraw_text()にいろいろやれば文字を表示できる.
         """
-        pygame.draw.rect(self.screen,(255,255,255), (400,10,200,180))
-        pygame.draw.rect(self.screen,(0,0,0), (405,15,190,170))
-        pygame.draw.rect(self.screen,(255,255,255), (10,10,150,200))
-        pygame.draw.rect(self.screen,(0,0,0), (15,15,140,190))
-        self.screen.blit(self.text_command_menu,(460,16))
-        self.screen.blit(self.text_status,(55,16))
-        self.screen.blit(self.text_commands[0], (445,35))
-        self.screen.blit(self.text_commands[1], (445,55))
+        draw_frame(self.screen,400,10,200,180)
+        draw_frame(self.screen,10,10,150,200)
+        draw_text(self.screen,set_text(self.font1,"Command"),460,16)
+        draw_text(self.screen,set_text(self.font1,"Denchu"),55,16)
+        draw_text(self.screen,set_text(self.font1,"Search"),445,35)
+        draw_text(self.screen,set_text(self.font1,"Use Buttery"),445,55)
 
-    def draw_search_around(self, text):
+    def draw_search_around(self, text1, text2="", text3="",text4=""):
         """
         「しらべる」実行時にそれを描写する関数.
         引数のtextと枠を描写する.
-        textは1行しか入力できない
+        textはとりあえず4行までなら設定できます(今後、画面サイズが変更になったらここらへんも変更になる可能性はあります)
         """
-        message = self.font2.render(text, False, (255,255,255))
-        pygame.draw.rect(self.screen, (255,255,255),(120,430,400,200))
-        pygame.draw.rect(self.screen, (0,0,0),(125,435,390,190))
-        self.screen.blit(message,(127,437))
+        draw_frame(self.screen,120,430,400,200)
+        draw_text(self.screen,set_text(self.font2,text1),127,447)
+        draw_text(self.screen,set_text(self.font2,text2),127,477)
+        draw_text(self.screen,set_text(self.font2,text3),127,507)
+        draw_text(self.screen,set_text(self.font2,text4),127,537)
 
     def draw_circle(self, _x, _y):
         pygame.draw.circle(self.screen,(255,255,255),(_x,_y), 8)
