@@ -6,7 +6,7 @@ from Model import Model
 from Controller import Controller
 from map import Map
 
-WINDOW_SIZE = (640,640)
+WINDOW_SIZE = (640,480)
 WINDOW_TITLE = "RPG_tansaku"
 
 class App:

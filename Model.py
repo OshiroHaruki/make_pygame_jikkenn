@@ -22,15 +22,18 @@ class Move_Checker():
     """
     探索パートの移動の制限に関するクラス.
     """
-    def __init__(self,limit_x, limit_y):
+    def __init__(self,map):
         """
         mapの端から端までの幅、高さを引数limitで指定する.
         """  
         self.LEFT_LIMIT = 0
-        self.RIGHT_LIMIT = limit_x -1
+        self.RIGHT_LIMIT = map.col -1
         self.UP_LIMIT = 0
-        self.DOWN_LIMIT = limit_y -1
-        self.cant_move_area = [] #侵入禁止箇所を作る時は、座標をリスト型で、このリストに代入する。
+        self.DOWN_LIMIT = map.row -1
+        self.map = map
+        self.map_deta = map.map
+        self.cant_move_area = [] #その他侵入禁止箇所を作る時は、座標をリスト型で、このリストに代入する。
+
     def set_dont_move_area(self,pos:list):
         """
         移動不可の場所を設定するための関数(処理によって移動不可能な場所を作りたい時に使う.)
@@ -41,11 +44,16 @@ class Move_Checker():
         """
         移動しようとする方向に、移動可能かを調べる関数.移動可能ならTrue,不可ならFalseを返す.
         """
-        if pos[0] + move_d[0] < self.LEFT_LIMIT or pos[0] + move_d[0] > self.RIGHT_LIMIT:
+        pos_add_sim = add_pos(pos,move_d)
+        simulate = self.map_deta[pos_add_sim[1]][pos_add_sim[0]]
+
+        if pos_add_sim[0] < self.LEFT_LIMIT or pos_add_sim[0] > self.RIGHT_LIMIT:
             return False
-        elif pos[1] + move_d[1] < self.UP_LIMIT or pos[1] + move_d[1] > self.DOWN_LIMIT:
+        elif pos_add_sim[1] < self.UP_LIMIT or pos_add_sim[1] > self.DOWN_LIMIT:
             return False
-        for i in self.cant_move_area:
+        elif simulate != 2 and simulate != 3 and simulate != 4:#mapデータが3,4,5(道)のどれでもないとき
+            return False
+        for i in self.cant_move_area:# その他移動不可のエリア
             if [pos[0]+move_d[0], pos[1]+move_d[1]] == i:
                 return False
         return True
@@ -85,7 +93,7 @@ class Player:
         """
         pass
 
-PLAYER_POS = [1,19]#初期位置
+PLAYER_POS = [0,4]#初期位置
 class Action_Search:
     """
     探索パートに関するクラス.　プレイヤーの移動や調べるコマンドの処理、メニュー機能の処理を行うクラス.
@@ -94,7 +102,7 @@ class Action_Search:
         self.player = player
         self.player.set_pos(PLAYER_POS)
         self.map = _map
-        self.move_checker = Move_Checker(self.map.col,self.map.row)
+        self.move_checker = Move_Checker(self.map)
         self.event_checker = Event_Checker()
 
     def player_move(self, p:list):
@@ -130,15 +138,13 @@ class Action_Search:
 class Menu:
     """
     メニューを開いている時の処理を行う.
-    Modelの、select_command_posと、t_select_moveをこっちに持ってくる.
-    あと、t_select_moveの完成(上方向への移動)と、コマンドの選択機能用の変数[]、関数が必要かな
-    openedGUIはModelでいい気がする(適当)
     """
     INIT_CIRCLE_POS = [425,45]
-    LIMIT_CIRCLE_POS_UNDER = 165
-    LIMIT_CIRCLE_POS_UP = 45
-    CIRCLE_MOVE = 20
     NUM_COMMAND = 3
+    CIRCLE_MOVE = 20
+    LIMIT_CIRCLE_POS_UP = 45
+    LIMIT_CIRCLE_POS_UNDER = LIMIT_CIRCLE_POS_UP + CIRCLE_MOVE * (NUM_COMMAND - 1) 
+    
     def __init__(self, action):
         self.select_command_pos = self.INIT_CIRCLE_POS
         self.select_command_now = 0 #この数字に対応した処理を行うようにする.
@@ -159,19 +165,15 @@ class Menu:
         選択ボタンっぽいやつ(円)を上に移動させる関数.
         """
         if self.select_command_pos[1] - self.CIRCLE_MOVE < self.LIMIT_CIRCLE_POS_UP:
-            self.select_command_pos[1] = 165 #一番上まで行ったら、一番下に戻る。
-            self.select_command_now = self.NUM_COMMAND
+            self.select_command_pos[1] = self.LIMIT_CIRCLE_POS_UNDER#一番上まで行ったら、一番下に戻る。
+            self.select_command_now = self.NUM_COMMAND - 1
         else:
             self.select_command_pos[1] -= self.CIRCLE_MOVE
             self.select_command_now -= 1
     def select_command(self):
-        if self.select_command_now == 0:
+        if self.select_command_now == 0:#Search
             result_text = self.act.player_search_around()
-        elif self.select_command_now == 1:
-            #キャラクタの座標に会話可能キャラがいる時
-            #会話パートに移行
-            #誰もいないとき
-            #result_text = "Nobody is here..."
+        elif self.select_command_now == 1:#Talk
             result_text = self.act.player_talk()
         else:
             result_text = "Er: No Action"
