@@ -17,7 +17,7 @@ class Controller:
                 self.model.move([0,1])
             elif key == K_e:
                 self.model.open_GUI()
-        else: # GUIが開いているとき
+        else: # メニューGUIが開いているとき
             if self.model.is_opened_message == False:# メッセージが開いている時
                 if key == K_e:
                     self.model.close_GUI()

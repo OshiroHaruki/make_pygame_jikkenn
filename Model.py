@@ -50,6 +50,20 @@ class Move_Checker():
                 return False
         return True
 
+class Event_Checker:
+    """会話イベントが発生するかどうかを判定するクラス
+    """
+    def __init__(self):
+        self.event_pos = [[0,0]] #会話イベントが発生する座標をここに入れておく.
+
+    def event_check(self,player_pos):
+        """プレイヤーが会話イベントマスにいるとき、Trueを返す
+        """
+        for area in self.event_pos:
+            if player_pos == area:
+                return True
+        return False
+
 class Player:
     """
     プレイヤーに関するクラス.Entityクラスを使って作成.
@@ -63,6 +77,8 @@ class Player:
         自分の位置(座標)をセットする関数
         """
         self.entity.set_pos(pos)
+    def get_pos(self):
+        return self.entity.get_pos()
     def get_item(self):
         """アイテム入手の処理。具体的にはself.items[名前] = 個数　とかにしたい
         
@@ -79,6 +95,7 @@ class Action_Search:
         self.player.set_pos(PLAYER_POS)
         self.map = _map
         self.move_checker = Move_Checker(self.map.col,self.map.row)
+        self.event_checker = Event_Checker()
 
     def player_move(self, p:list):
         """
@@ -101,6 +118,14 @@ class Action_Search:
         else:
             set_text = set_text + " Not Found..."
         return set_text
+    
+    def player_talk(self):
+        set_text = ""
+        if self.event_checker.event_check(self.player.get_pos()):
+            set_text = "hello!" # 会話イベント発生。ここではとりあえずハロー
+        else:
+            set_text = "Nobody is here..."
+        return set_text
 
 class Menu:
     """
@@ -113,7 +138,7 @@ class Menu:
     LIMIT_CIRCLE_POS_UNDER = 165
     LIMIT_CIRCLE_POS_UP = 45
     CIRCLE_MOVE = 20
-    NUM_COMMAND = 6
+    NUM_COMMAND = 3
     def __init__(self, action):
         self.select_command_pos = self.INIT_CIRCLE_POS
         self.select_command_now = 0 #この数字に対応した処理を行うようにする.
@@ -142,6 +167,12 @@ class Menu:
     def select_command(self):
         if self.select_command_now == 0:
             result_text = self.act.player_search_around()
+        elif self.select_command_now == 1:
+            #キャラクタの座標に会話可能キャラがいる時
+            #会話パートに移行
+            #誰もいないとき
+            #result_text = "Nobody is here..."
+            result_text = self.act.player_talk()
         else:
             result_text = "Er: No Action"
         return result_text

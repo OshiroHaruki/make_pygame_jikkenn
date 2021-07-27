@@ -63,7 +63,8 @@ class View:
         draw_text(self.screen,set_text(self.font1,"Command"),460,16)
         draw_text(self.screen,set_text(self.font1,"Denchu"),55,16)
         draw_text(self.screen,set_text(self.font1,"Search"),445,35)
-        draw_text(self.screen,set_text(self.font1,"Use Buttery"),445,55)
+        draw_text(self.screen,set_text(self.font1,"Talk"),445,55)
+        draw_text(self.screen,set_text(self.font1,"Use Buttery"),445,75)
 
     def draw_search_around(self, text1, text2="", text3="",text4=""):
         """
