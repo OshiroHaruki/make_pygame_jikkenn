@@ -62,7 +62,7 @@ class Event_Checker:
     """会話イベントが発生するかどうかを判定するクラス
     """
     def __init__(self):
-        self.event_pos = [[0,0]] #会話イベントが発生する座標をここに入れておく.
+        self.event_pos = [] #会話イベントが発生する座標をここに入れておく.座標は配列の形式で入れてください
 
     def event_check(self,player_pos):
         """プレイヤーが会話イベントマスにいるとき、Trueを返す
@@ -131,8 +131,22 @@ class Action_Search:
         set_text = ""
         if self.event_checker.event_check(self.player.get_pos()):
             set_text = "hello!" # 会話イベント発生。ここではとりあえずハロー
+            #本来は会話イベント移行のための関数を実行する
         else:
             set_text = "Nobody is here..."
+        return set_text
+    
+    def player_use_buttery(self):
+        set_text = ""
+        #if butteryが１こ以上あるなら
+        #バッテリーを使ったというメッセージをsetし、バッテリーを使う処理を行う
+        #else (butteryを所持していないなら)
+        #バッテリーを持ってないというメッセージをsetする
+
+        #プレイヤークラス未実装らしいので、とりあえずのメッセージをsetする
+        test_message = "use buttery test message"
+        set_text = test_message
+
         return set_text
 
 class Menu:
@@ -140,7 +154,7 @@ class Menu:
     メニューを開いている時の処理を行う.
     """
     INIT_CIRCLE_POS = [425,45]
-    NUM_COMMAND = 3
+    NUM_COMMAND = 4
     CIRCLE_MOVE = 20
     LIMIT_CIRCLE_POS_UP = 45
     LIMIT_CIRCLE_POS_UNDER = LIMIT_CIRCLE_POS_UP + CIRCLE_MOVE * (NUM_COMMAND - 1) 
@@ -175,6 +189,10 @@ class Menu:
             result_text = self.act.player_search_around()
         elif self.select_command_now == 1:#Talk
             result_text = self.act.player_talk()
+        elif self.select_command_now == 2:#Use Buttery
+            result_text = self.act.player_use_buttery()
+        elif self.select_command_now == 3:#doragonball
+            result_text = "7ko atsumeruto clear!"
         else:
             result_text = "Er: No Action"
         return result_text
@@ -193,7 +211,6 @@ class Model:
         self.message = ""
         self.is_opened_message = False
 
-        #self.select_command_pos = [425,45]
         self.menu = Menu(self.act_search)
 
     def move(self,p:list):
@@ -232,7 +249,7 @@ class Model:
         self.menu.select_move_up()
     def select_command(self):
         self.message = self.menu.select_command()
-        self.open_Message()
+        self.open_Message() #今のところは必ずopen_Message()するようにしているが、会話パートの結合次第では条件分岐で、会話パート移行の関数を実行するように処理を変更する。
 
     def update(self):#ここで描写の更新をViewに通知する
         """

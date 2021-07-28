@@ -76,18 +76,26 @@ class View:
     def draw_menu(self):
         """
         メニューのGUIを描写する関数.GUIの枠組みを表示するだけ.
+        Playerクラスが出来次第、引数にPlayerクラスをとってhpやアイテムの個数をとるように設定する必要があります。
         ->関数で枠やテキストを表示するようにしているので、画面サイズが変更になっても数値をいじるだけで対応可能.
         ->コマンドを増やす時はdraw_text()にいろいろやれば文字を表示できる.
         """
-        draw_frame(self.screen,400,10,200,180)
-        draw_frame(self.screen,10,10,150,200)
-        draw_text(self.screen,set_text(self.font1,"Command"),460,16)
-        draw_text(self.screen,set_text(self.font1,"Denchu"),55,16)
+        draw_frame(self.screen,400,10,200,180) #右側の枠
+        draw_frame(self.screen,10,10,150,100) #左側の枠
+        draw_text(self.screen,set_text(self.font1,"Menu"),460,16)
         draw_text(self.screen,set_text(self.font1,"Search"),445,35)
         draw_text(self.screen,set_text(self.font1,"Talk"),445,55)
         draw_text(self.screen,set_text(self.font1,"Use Buttery"),445,75)
+        #電池の個数表示機能は、上の"use buttery" の右に、個数を表示すれば良い。
+        draw_text(self.screen,set_text(self.font1,"DragOn Ball"),445,95)
 
-    def draw_search_around(self, text1, text2="", text3="",text4=""):
+        draw_text(self.screen,set_text(self.font1,"Denchu"),55,16)
+        draw_text(self.screen,set_text(self.font1,"HP:"),35,36)
+        draw_text(self.screen,set_text(self.font1,"ATK:"),35,56)
+        draw_text(self.screen,set_text(self.font1,"SPD:"),35,76)
+        #Playerクラスが出来次第、引数にそれをとって数値を表示する機能を足してくだしあ。
+
+    def draw_search_around(self, text1="", text2="", text3="",text4=""):
         """
         「しらべる」実行時にそれを描写する関数.
         引数のtextと枠を描写する.
