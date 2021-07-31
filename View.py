@@ -63,9 +63,10 @@ class View:
         キャラクターを描写する関数.
         objはキャラクタ. objは少なくとも、"画像名(visual)"と"位置(pos)"を持つ
         """
-        img = self.sprites[obj.visual]
-        draw_pos = [obj.pos[0] * DRAW_LITERAL_32px, obj.pos[1] * DRAW_LITERAL_32px]
-        self.screen.blit(img, draw_pos)
+        if obj.visual is not None:
+            img = self.sprites[obj.visual]
+            draw_pos = [obj.pos[0] * DRAW_LITERAL_32px, obj.pos[1] * DRAW_LITERAL_32px]
+            self.screen.blit(img, draw_pos)
 
     def draw_map(self):
         """
@@ -73,12 +74,15 @@ class View:
         """
         self.map.draw(self.screen)
     
-    def draw_menu(self):
+    def draw_menu(self,player=None):
         """
         メニューのGUIを描写する関数.GUIの枠組みを表示するだけ.
         Playerクラスが出来次第、引数にPlayerクラスをとってhpやアイテムの個数をとるように設定する必要があります。
         ->関数で枠やテキストを表示するようにしているので、画面サイズが変更になっても数値をいじるだけで対応可能.
         ->コマンドを増やす時はdraw_text()にいろいろやれば文字を表示できる.
+
+        Args:
+            player:ステータスを表示するため。後々「Noneでも大丈夫」な設定は取り払う
         """
         draw_frame(self.screen,400,10,200,180) #右側の枠
         draw_frame(self.screen,10,10,150,100) #左側の枠
@@ -93,7 +97,13 @@ class View:
         draw_text(self.screen,set_text(self.font1,"HP:"),35,36)
         draw_text(self.screen,set_text(self.font1,"ATK:"),35,56)
         draw_text(self.screen,set_text(self.font1,"SPD:"),35,76)
-        #Playerクラスが出来次第、引数にそれをとって数値を表示する機能を足してくだしあ。
+
+        if player is not None:
+            draw_text(self.screen,set_text(self.font1,str(player.entity.status[0])),85,36)
+            draw_text(self.screen,set_text(self.font1,str(player.entity.status[1])),85,56)
+            draw_text(self.screen,set_text(self.font1,str(player.entity.status[2])),85,76)
+            draw_text(self.screen,set_text(self.font1,str(player.items["buttery"])),575,75)
+            draw_text(self.screen,set_text(self.font1,str(player.items["doragon_ball"])),575,95)
 
     def draw_search_around(self, text1="", text2="", text3="",text4=""):
         """
