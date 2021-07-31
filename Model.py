@@ -5,16 +5,17 @@ from Tansaku_Functions import *
 class Model:
     def __init__(self,view):
         """
-        view:Viewクラスを格納
-        map:マップ情報を格納
-        entites:キャラクターの情報をまとめて格納
-        denchu_data:探索パートでプレイヤーに情報を与えるために設定
-        player:探索パートで動かす物体。
-        act_search:探索パートの処理を定義
-        is_opened_GUI:メニューGUIが開いているかどうかの状態。
-        message:Viewに文字を通知したい時に使うために定義。
-        is_opened_message:メッセージが開いているかどうかの状態。
-        menu:メニュー機能を定義。
+        Attributes:
+            view:Viewクラスを格納
+            map:マップ情報を格納
+            entites:キャラクターの情報をまとめて格納
+            denchu_data:探索パートでプレイヤーに情報を与えるために設定
+            player:探索パートで動かす物体。
+            act_search:探索パートの処理を定義
+            is_opened_GUI:メニューGUIが開いているかどうかの状態。
+            message:Viewに文字を通知したい時に使うために定義。
+            is_opened_message:メッセージが開いているかどうかの状態。
+            menu:メニュー機能を定義。
         """
         self.view = view
         self.map = self.view.map #map格納
@@ -32,32 +33,29 @@ class Model:
         self.menu = Menu(self.act_search)
 
     def move(self,p:list):
-        """
-        プレイヤーの移動を行う関数
+        """プレイヤーの移動を行う関数.
+        Args:
+            p:list[x方向,y方向]で受け取る.
         """
         self.act_search.player_move(p)
 
     def open_GUI(self):
-        """
-        GUIを開く関数
+        """GUIを開く関数.
         """
         self.is_opened_GUI = True
 
     def close_GUI(self):
-        """
-        GUIを閉じる関数
+        """GUIを閉じる関数.
         """
         self.is_opened_GUI = False
     
     def open_Message(self):
-        """
-        メッセージ画面を開く関数
+        """メッセージ画面を開く関数.
         """
         self.is_opened_message = True
 
     def close_Message(self):
-        """
-        メッセージ画面を閉じる関数
+        """メッセージ画面を閉じる関数.
         """
         self.is_opened_message = False
 
@@ -76,8 +74,7 @@ class Model:
         self.open_Message() #今のところは必ずopen_Message()するようにしているが、会話パートの結合次第では条件分岐で、会話パート移行の関数を実行するように処理を変更する。
 
     def update(self):#ここで描写の更新をViewに通知する
-        """
-        viewに結果を通知する関数.
+        """viewに結果を通知する関数.
         """
         self.view.draw_map()
         for obj in self.entites[:]:
@@ -88,7 +85,7 @@ class Model:
         if self.is_opened_message:
             self.view.draw_search_around(self.message)
 
-    def make_entity_book(self):#結合時に必要になったので戦闘パートから持ってきた。
+    def make_entity_book(self):
         """
         登場人物のステータス等を記載する図鑑
         proficiencyがskillsを参照した長さのリストを持つので、予めskillを定義してからEntityを生成する。
