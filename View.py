@@ -126,7 +126,7 @@ class View:
         draw_text(self.screen,set_text(self.font_small,"Menu"),460,16)
         draw_text(self.screen,set_text(self.font_small,"Search"),445,35)
         draw_text(self.screen,set_text(self.font_small,"Talk"),445,55)
-        draw_text(self.screen,set_text(self.font_small,"Use Buttery"),445,75)
+        draw_text(self.screen,set_text(self.font_small,"Use Battery"),445,75)
         draw_text(self.screen,set_text(self.font_small,"DragOn Ball"),445,95)
 
         draw_text(self.screen,set_text(self.font_small,"Denchu"),55,16)
@@ -138,7 +138,7 @@ class View:
             draw_text(self.screen,set_text(self.font_small,str(player.entity.status[0])),85,36)
             draw_text(self.screen,set_text(self.font_small,str(player.entity.status[1])),85,56)
             draw_text(self.screen,set_text(self.font_small,str(player.entity.status[2])),85,76)
-            draw_text(self.screen,set_text(self.font_small,str(player.items["buttery"])),575,75)
+            draw_text(self.screen,set_text(self.font_small,str(player.items["battery"])),575,75)
             draw_text(self.screen,set_text(self.font_small,str(player.items["doragon_ball"])),575,95)
 
     def draw_search_around(self, text1="", text2="", text3="",text4=""):

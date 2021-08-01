@@ -22,7 +22,7 @@ class Entity:
         self.skills = skills
         self.status = status
         self.proficiency = proficiency
-        self.pos = [0,0]
+        self.pos = [0,0]#初期化
     def get_pos(self)->list:
         """位置情報を返す.
         Return
@@ -53,6 +53,7 @@ class Move_Checker():
         self.RIGHT_LIMIT = map.col -1
         self.UP_LIMIT = 0
         self.DOWN_LIMIT = map.row -1
+        self.MAP_LOADS = [2,3,4] #マップデータの2,3,4が道なので定数で宣言しておく.
         self.map = map
         self.map_deta = map.map
         self.cant_move_area = [] #その他侵入禁止箇所を作る時は、座標をリスト型で、このリストに代入する。
@@ -79,7 +80,7 @@ class Move_Checker():
             return False
         elif pos_add_sim[1] < self.UP_LIMIT or pos_add_sim[1] > self.DOWN_LIMIT:
             return False
-        elif simulate != 2 and simulate != 3 and simulate != 4:#mapデータが3,4,5(道)のどれでもないとき
+        elif simulate != self.MAP_LOADS[0] and simulate != self.MAP_LOADS[1] and simulate != self.MAP_LOADS[2]:
             return False
         for i in self.cant_move_area:# その他移動不可のエリア
             if [pos[0]+move_d[0], pos[1]+move_d[1]] == i:
@@ -96,6 +97,13 @@ class Event_Checker:
                       (例)self.event_pos = [[0,1],[2,2]]なら座標(0,1)と(2,2)で会話イベントを起こせる
         """
         self.event_pos = [] #会話イベントが発生する座標をここに入れておく.座標は配列の形式で入れてください
+
+    def set_event_pos(self,pos):
+        """event_posに座標をセットする関数.
+        Args:
+            pos:長さ2のリスト.
+        """
+        self.event_pos.append(pos)
 
     def event_check(self,player_pos):
         """プレイヤーが会話イベントマスにいるとき、Trueを返す
@@ -119,7 +127,7 @@ class Player():
             items:辞書方.{"アイテム名":個数}で定義.
         """
         self.entity = entity#キャラクターのパラメータ などを格納
-        self.items = {"buttery":0, "doragon_ball":0}
+        self.items = {"battery":0, "doragon_ball":0}
     
     def set_pos(self,pos:list):
         """自分の位置(座標)をセットする関数
@@ -135,15 +143,15 @@ class Player():
     def get_item(self,item_name:str):
         """アイテム入手の処理。
         Args:
-            item_name:アイテム名(butteryかdoragon_ball)
+            item_name:アイテム名(batteryかdoragon_ball)
         """
         self.items[item_name] += 1
-    def use_buttery(self):
+    def use_battery(self):
         """バッテリー使用の処理。
         !!!HPを回復するが、HP回復の関数がまだ実装されてないみたいなのでとりあえずバッテリー消費だけ。!!!
         """
-        if self.items["buttery"] >= 1:
-            self.items["buttery"] -= 1
+        if self.items["battery"] >= 1:
+            self.items["battery"] -= 1
 
 
 PLAYER_POS = [0,4]#初期位置
@@ -170,7 +178,7 @@ class Action_Search:
     def player_move(self, p:list):
         """プレイヤーの移動処理を行う関数.
         Args:
-            p:長さ2のリスト.
+            p:長さ2のリスト.[x方向(右が正),y方向(下が正)]
         """
         if (self.move_checker.move_check(self.player.entity.pos, p)):#移動可能かを調べ、移動可能なら移動させる
             pos = add_pos(self.player.entity.pos, p)
@@ -184,7 +192,7 @@ class Action_Search:
         set_text = ""
         rand_event = random.random()
         if rand_event > 0.5:
-            self.player.get_item("buttery")
+            self.player.get_item("battery")
             set_text = set_text + " Get Decnhi!"
         else:
             set_text = set_text + " Not Found..."
@@ -204,27 +212,27 @@ class Action_Search:
             set_text = "Nobody is here..."
         return set_text
     
-    def player_use_buttery(self):
-        """use butteryを使う処理をする関数.
+    def player_use_battery(self):
+        """use batteryを使う処理をする関数.
             !!!未完成!!!
         Return:
             set_text:str型.
         """
         set_text = ""
-        #if butteryが１こ以上あるなら
-        if self.player.items["buttery"] >= 1:
+        #if batteryが１こ以上あるなら
+        if self.player.items["battery"] >= 1:
             #バッテリーを使ったというメッセージをsetし、バッテリーを使う処理を行う
-            set_text = "Use Buttery!"
-            self.player.use_buttery()
-        else:#else (butteryを所持していないなら)
+            set_text = "Use Battery!" #ここ変えたらテストの方も変えてください
+            self.player.use_battery()
+        else:#else (batteryを所持していないなら)
         #バッテリーを持ってないというメッセージをsetする
-            set_text = "I don't have buttery..."
+            set_text = "I don't have battery..." #ここも変えたらテストの方も変えてください.
 
         return set_text
 
 COMMAND_SEARCH_NUMBER = 0
 COMMAND_TALK_NUMBER = 1
-COMMAND_USE_BUTTERY_NUMBER = 2
+COMMAND_USE_BATTERY_NUMBER = 2
 COMMAND_DORAGONBALL_NUMBER = 3
 class Menu:
     """メニューを開いている時の処理を行う.
@@ -279,10 +287,10 @@ class Menu:
             result_text = self.act.player_search_around()
         elif self.select_command_now == COMMAND_TALK_NUMBER:#Talk
             result_text = self.act.player_talk()
-        elif self.select_command_now == COMMAND_USE_BUTTERY_NUMBER:#Use Buttery
-            result_text = self.act.player_use_buttery()
+        elif self.select_command_now == COMMAND_USE_BATTERY_NUMBER:#Use battery
+            result_text = self.act.player_use_battery()
         elif self.select_command_now == COMMAND_DORAGONBALL_NUMBER:#doragonball
             result_text = "7ko atsumeruto clear!"
         else:
-            result_text = "Er: No Action"
+            result_text = "Er: No Action"#Error用テキスト.念のため.
         return result_text
